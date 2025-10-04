@@ -33,11 +33,6 @@ public class FileManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
-                try {
-                    Thread.sleep(300); // Затримка для ефекту
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
             }
         } catch (FileNotFoundException e) {
             System.err.println("Файл не знайдено: " + filename);

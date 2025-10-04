@@ -121,8 +121,8 @@ public class Main {
         int stratChoice = getIntInput("Оберіть стратегію (1-3): ");
         BattleStrategy strategy = new BattleStrategy(stratChoice);
 
-        List<Droid> team1 = selectTeam("Команда 1");
-        List<Droid> team2 = selectTeam("Команда 2");
+        List<Droid> team1 = selectTeam("Команда 1", null);
+        List<Droid> team2 = selectTeam("Команда 2", team1);
 
         if (team1.isEmpty() || team2.isEmpty()) {
             System.out.println("Команди не можуть бути порожніми!");
@@ -134,23 +134,53 @@ public class Main {
         lastBattleLog = battle.getBattleLog();
     }
 
-    private static List<Droid> selectTeam(String teamName) {
+    private static List<Droid> selectTeam(String teamName, List<Droid> otherTeam) {
         List<Droid> team = new ArrayList<>();
         System.out.println("\nФормування " + teamName);
 
         while (true) {
             showDroids();
-            System.out.println("Поточна команда: " +
-                    (team.isEmpty() ? "порожня" :
-                            team.stream().map(Droid::getName).reduce((a, b) -> a + ", " + b).orElse("")));
+
+            String teamMembers = "порожня";
+            if (!team.isEmpty()) {
+                teamMembers = "";
+                for (int i = 0; i < team.size(); i++) {
+                    teamMembers += team.get(i).getName();
+                    if (i < team.size() - 1) {
+                        teamMembers += ", ";
+                    }
+                }
+            }
+            System.out.println("Поточна команда: " + teamMembers);
 
             int idx = getIntInput("Оберіть дроїда (0 - завершити): ") - 1;
 
             if (idx == -1) break;
 
             if (idx >= 0 && idx < droids.size()) {
-                team.add(cloneDroid(droids.get(idx)));
-                System.out.println("Дроїда додано до команди!");
+                Droid selectedDroid = droids.get(idx);
+                boolean alreadyInTeam = false;
+                for (Droid d : team) {
+                    if (d.getName().equals(selectedDroid.getName())) {
+                        alreadyInTeam = true;
+                        break;
+                    }
+                }
+                if (!alreadyInTeam && otherTeam != null) {
+                    for (Droid d : otherTeam) {
+                        if (d.getName().equals(selectedDroid.getName())) {
+                            alreadyInTeam = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (alreadyInTeam) {
+                    System.out.println("Цей дроїд вже в команді! Оберіть іншого.");
+                } else {
+                    team.add(cloneDroid(selectedDroid));
+                    System.out.println("Дроїда додано до команди!");
+                }
             }
         }
 

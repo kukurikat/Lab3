@@ -99,6 +99,12 @@ public class Main {
             System.out.println("Невірний вибір!");
             return;
         }
+
+        if (idx1 == idx2) {
+            System.out.println("Не можна обрати одного і того самого дроїда для бою!");
+            return;
+        }
+
         Droid d1 = cloneDroid(droids.get(idx1));
         Droid d2 = cloneDroid(droids.get(idx2));
 
